@@ -42,15 +42,45 @@
               <li v-for="cookie in allCookie">
                 <span class="cookieImg"><img :src="cookie.goodsImg"></span>
                 <div>
-                  <p >{{cookie.goodsName}}</p>
-                  <p  class="price">￥{{cookie.price}}</p>
+                  <p>{{cookie.goodsName}}</p>
+                  <p class="price">￥{{cookie.price}}</p>
                 </div>
               </li>
             </ul>
           </el-tab-pane>
-          <el-tab-pane label="小吃"></el-tab-pane>
-          <el-tab-pane label="饮品"></el-tab-pane>
-          <el-tab-pane label="套餐"></el-tab-pane>
+          <el-tab-pane label="小吃">
+            <ul class="cookie-list">
+              <li v-for="cookie in allCookieTwo">
+                <span class="cookieImg"><img :src="cookie.goodsImg"></span>
+                <div>
+                  <p>{{cookie.goodsName}}</p>
+                  <p class="price">￥{{cookie.price}}</p>
+                </div>
+              </li>
+            </ul>
+          </el-tab-pane>
+          <el-tab-pane label="饮品">
+            <ul class="cookie-list">
+              <li v-for="cookie in allCookieThree">
+                <span class="cookieImg"><img :src="cookie.goodsImg"></span>
+                <div>
+                  <p>{{cookie.goodsName}}</p>
+                  <p class="price">￥{{cookie.price}}</p>
+                </div>
+              </li>
+            </ul>
+          </el-tab-pane>
+          <el-tab-pane label="套餐">
+            <ul class="cookie-list">
+              <li v-for="cookie in allCookieFour">
+                <span class="cookieImg"><img :src="cookie.goodsImg"></span>
+                <div>
+                  <p>{{cookie.goodsName}}</p>
+                  <p class="price">￥{{cookie.price}}</p>
+                </div>
+              </li>
+            </ul>
+          </el-tab-pane>
         </el-tabs>
       </el-col>
     </el-row>
@@ -59,6 +89,7 @@
 
 <script>
   import ElRow from "element-ui/packages/row/src/row";
+  import Axios from 'axios'
 
   export default {
     components: {ElRow},
@@ -81,103 +112,34 @@
         price: 8,
         count: 1
       }],
-      allGoods: [
-        {
-          goodsId: 1,
-          goodsName: '香辣鸡腿堡',
-          price: 18
-        }, {
-          goodsId: 2,
-          goodsName: '田园鸡腿堡',
-          price: 15
-        }, {
-          goodsId: 3,
-          goodsName: '和风汉堡',
-          price: 15
-        }, {
-          goodsId: 4,
-          goodsName: '快乐全家桶',
-          price: 80
-        }, {
-          goodsId: 5,
-          goodsName: '脆皮炸鸡腿',
-          price: 10
-        }, {
-          goodsId: 6,
-          goodsName: '魔法鸡块',
-          price: 20
-        }, {
-          goodsId: 7,
-          goodsName: '可乐大杯',
-          price: 10
-        }, {
-          goodsId: 8,
-          goodsName: '雪顶咖啡',
-          price: 18
-        }, {
-          goodsId: 9,
-          goodsName: '大块鸡米花',
-          price: 15
-        }, {
-          goodsId: 20,
-          goodsName: '香脆鸡柳',
-          price: 17
-        }
-      ],
-      allCookie: [
-        {
-          goodsId: 1,
-          goodsImg: "http://7xjyw1.com1.z0.glb.clouddn.com/pos001.jpg",
-          goodsName: '香辣鸡腿堡',
-          price: 18
-        }, {
-          goodsId: 2,
-          goodsImg: "http://7xjyw1.com1.z0.glb.clouddn.com/pos002.jpg",
-          goodsName: '田园鸡腿堡',
-          price: 15
-        }, {
-          goodsId: 3,
-          goodsImg: "http://7xjyw1.com1.z0.glb.clouddn.com/pos004.jpg",
-          goodsName: '和风汉堡',
-          price: 15
-        }, {
-          goodsId: 4,
-          goodsImg: "http://7xjyw1.com1.z0.glb.clouddn.com/pos003.jpg",
-          goodsName: '快乐全家桶',
-          price: 80
-        }, {
-          goodsId: 5,
-          goodsImg: "http://7xjyw1.com1.z0.glb.clouddn.com/pos003.jpg",
-          goodsName: '脆皮炸鸡腿',
-          price: 10
-        }, {
-          goodsId: 6,
-          goodsImg: "http://7xjyw1.com1.z0.glb.clouddn.com/pos004.jpg",
-          goodsName: '魔法鸡块',
-          price: 20
-        }, {
-          goodsId: 7,
-          goodsImg: "http://7xjyw1.com1.z0.glb.clouddn.com/pos001.jpg",
-          goodsName: '可乐大杯',
-          price: 10
-        }, {
-          goodsId: 8,
-          goodsImg: "http://7xjyw1.com1.z0.glb.clouddn.com/pos003.jpg",
-          goodsName: '雪顶咖啡',
-          price: 18
-        }, {
-          goodsId: 9,
-          goodsImg: "http://7xjyw1.com1.z0.glb.clouddn.com/pos002.jpg",
-          goodsName: '大块鸡米花',
-          price: 15
-        }, {
-          goodsId: 20,
-          goodsImg: "http://7xjyw1.com1.z0.glb.clouddn.com/pos002.jpg",
-          goodsName: '香脆鸡柳',
-          price: 17
-        }
-      ],
+      allGoods: [],
+      allCookie: [],
+      allCookieTwo: [],
+      allCookieThree: [],
+      allCookieFour: [],
     }),
+    created: function () {
+      Axios.get('http://jspang.com/DemoApi/oftenGoods.php')
+        .then(response => {
+          this.allGoods = response.data;
+        })
+        .catch(error => {
+          console.log(error);
+          alert('网络错误，不能访问');
+        });
+      Axios.get('http://jspang.com/DemoApi/typeGoods.php')
+        .then(response => {
+          this.allCookie = response.data[0];
+          this.allCookieTwo = response.data[1];
+          this.allCookieThree = response.data[2];
+          this.allCookieFour = response.data[3];
+
+        })
+        .catch(error => {
+          console.log(error);
+          alert('网络错误，不能访问');
+        })
+    },
     mounted: function () {
       let orderHeight = document.body.clientHeight;
       document.querySelector('#order').style.height = orderHeight + "px"
@@ -229,9 +191,10 @@
   .cookie-list li span, .cookie-list li div {
     float: left;
   }
-  .cookie-list li div{
+
+  .cookie-list li div {
     display: flex;
-    flex-direction:column;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 50px;
