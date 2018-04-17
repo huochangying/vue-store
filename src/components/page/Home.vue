@@ -10,26 +10,32 @@
               <el-table-column header-align="center" prop="price" label="金额"></el-table-column>
               <el-table-column header-align="center" label="操作">
                 <template slot-scope="scope">
-                  <el-button type="text" size="small">删除</el-button>
-                  <el-button type="text" size="small">增加</el-button>
+                  <el-button type="text" size="small" @click="deleteGoods(scope.row)">删除</el-button>
+                  <el-button type="text" size="small" @click="addOrderList(scope.row)">增加</el-button>
                 </template>
               </el-table-column>
             </el-table>
+            <div class="result">
+              <span>数量：{{totalCount}}</span>
+              <span>金额：{{totalMoney}}</span>
+            </div>
             <div class="cancel-btn">
               <el-button type="warning" size="small">挂单</el-button>
-              <el-button type="danger" size="small">删除</el-button>
-              <el-button type="success" size="small">结账</el-button>
+              <el-button type="danger" size="small" @click="deleteAll">删除</el-button>
+              <el-button type="success" size="small" @click="checkOut">结账</el-button>
             </div>
           </el-tab-pane>
           <el-tab-pane label="挂单">挂单</el-tab-pane>
           <el-tab-pane label="外卖">外卖</el-tab-pane>
+
         </el-tabs>
+
       </el-col>
       <el-col :span="16">
         <el-tabs class="box">
           <el-tab-pane label="常用商品">
             <ul class="goods-list">
-              <li v-for="goods in allGoods">
+              <li v-for="goods in allGoods" @click="addOrderList(goods)">
                 <span>{{goods.goodsName}}</span>
                 <span class="price">￥{{goods.price}}</span>
               </li>
@@ -39,7 +45,7 @@
         <el-tabs class="box">
           <el-tab-pane label="汉堡">
             <ul class="cookie-list">
-              <li v-for="cookie in allCookie">
+              <li v-for="cookie in allCookie" @click="addOrderList(cookie)">
                 <span class="cookieImg"><img :src="cookie.goodsImg"></span>
                 <div>
                   <p>{{cookie.goodsName}}</p>
@@ -50,7 +56,7 @@
           </el-tab-pane>
           <el-tab-pane label="小吃">
             <ul class="cookie-list">
-              <li v-for="cookie in allCookieTwo">
+              <li v-for="cookie in allCookieTwo" @click="addOrderList(cookie)">
                 <span class="cookieImg"><img :src="cookie.goodsImg"></span>
                 <div>
                   <p>{{cookie.goodsName}}</p>
@@ -61,7 +67,7 @@
           </el-tab-pane>
           <el-tab-pane label="饮品">
             <ul class="cookie-list">
-              <li v-for="cookie in allCookieThree">
+              <li v-for="cookie in allCookieThree" @click="addOrderList(cookie)">
                 <span class="cookieImg"><img :src="cookie.goodsImg"></span>
                 <div>
                   <p>{{cookie.goodsName}}</p>
@@ -72,7 +78,7 @@
           </el-tab-pane>
           <el-tab-pane label="套餐">
             <ul class="cookie-list">
-              <li v-for="cookie in allCookieFour">
+              <li v-for="cookie in allCookieFour" @click="addOrderList(cookie)">
                 <span class="cookieImg"><img :src="cookie.goodsImg"></span>
                 <div>
                   <p>{{cookie.goodsName}}</p>
@@ -95,23 +101,9 @@
     components: {ElRow},
     name: "home",
     data: () => ({
-      tableData: [{
-        name: '可口可乐',
-        price: 8,
-        count: 1
-      }, {
-        name: '香辣鸡腿堡',
-        price: 15,
-        count: 1
-      }, {
-        name: '爱心薯条',
-        price: 8,
-        count: 1
-      }, {
-        name: '甜筒',
-        price: 8,
-        count: 1
-      }],
+      totalCount: 0,
+      totalMoney: 0,
+      tableData: [],
       allGoods: [],
       allCookie: [],
       allCookieTwo: [],
@@ -143,6 +135,67 @@
     mounted: function () {
       let orderHeight = document.body.clientHeight;
       document.querySelector('#order').style.height = orderHeight + "px"
+    },
+    methods: {
+      addOrderList(goods) {
+        this.totalCount = 0;
+        this.totalMoney = 0;
+        let _isHave = false;
+        for (let i = 0; i < this.tableData.length; i++) {
+          if (this.tableData[i].goodsId == goods.goodsId) {
+            _isHave = true;
+          }
+        }
+
+        if (_isHave) {
+          let _arr = this.tableData.filter(x => x.goodsId == goods.goodsId);
+          _arr[0].count++
+        } else {
+          let newGoods = {
+            goodsId: goods.goodsId,
+            name: goods.goodsName,
+            price: goods.price,
+            count: 1
+          };
+          this.tableData.push(newGoods);
+        }
+
+        this.resultCount();
+
+      },
+      deleteGoods(goods) {
+        this.tableData = this.tableData.filter(x => x.goodsId != goods.goodsId);
+        this.resultCount();
+      },
+      resultCount() {
+        this.totalCount = 0;
+        this.totalMoney = 0;
+        if (this.tableData) {
+          this.tableData.forEach((element) => {
+            this.totalCount += element.count;
+            this.totalMoney = this.totalMoney + (element.price * element.count);
+          })
+        }
+      },
+      deleteAll() {
+        this.tableData = [];
+        this.totalCount = 0;
+        this.totalMoney = 0;
+      },
+      checkOut() {
+        if (this.totalCount != 0) {
+          this.tableData = [];
+          this.totalCount = 0;
+          this.totalMoney = 0;
+          this.$message({
+            message: '结账成功!',
+            type: 'success'
+          });
+        } else {
+          this.$message.error('您还没有购买任何商品！');
+        }
+
+      }
     }
   }
 </script>
@@ -201,4 +254,12 @@
     padding-left: 5px;
   }
 
+  .result {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 48px;
+    background: #fff;
+    border-bottom: 1px solid #ebeef5;
+  }
 </style>
